@@ -308,14 +308,18 @@ def google_login():
                 201,
             )
         else:
+            print("xxxxxxxxxxx1")
             # Create a new user
             new_user = User(**user_identity)
+            print("xxxxxxxxxxx2")
 
             # Save the new user to the database
             db.session.add(new_user)
             db.session.commit()
+            print("xxxxxxxxxxx3")
 
             new_user_json = user_schema.dump(new_user)
+            print("xxxxxxxxxxx4")
 
             # Check if the user was referred
             ref_code = user_data.get("referral_code")
@@ -323,9 +327,11 @@ def google_login():
                 user_unique_key = user_data.get("email")
                 referral.add_friend_data_to_temp_db(user_unique_key, ref_code)
 
+            print("xxxxxxxxxxx5")
             # Get the friend that referred the user from redis
             referrer_id = redis_client.get(f"ref_code_friend:{user_data.get('email')}")
 
+            print("xxxxxxxxxxx6")
             # Get the referral code of the referrer
             ref_code = redis_client.get(f"user_id_ref_code:{referrer_id}")
             if referrer_id and ref_code:
@@ -334,7 +340,9 @@ def google_login():
                 )
 
             # Create JWT token
+            print("xxxxxxxxxxx7")
             access_token = create_access_token(identity=new_user_json)
+            print("xxxxxxxxxxx8")
 
             return jsonify(
                 {"message": "Google Signin Successful.", "access_token": access_token}
