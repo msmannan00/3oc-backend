@@ -308,7 +308,13 @@ def google_login():
                 201,
             )
         else:
-            print("xxxxxxxxxxx1")
+            print("pppppppppppxxx1", flush=True)
+            print("pppppppppppxxx1", flush=True)
+            print("pppppppppppxxx1", flush=True)
+            redis_client.set(f"ref_code_friend:", "dsadasdas")
+            print("pppppppppppxcc1", flush=True)
+            print("pppppppppppxcc1", flush=True)
+            print("pppppppppppxcc1", flush=True)
             # Create a new user
             new_user = User(**user_identity)
 
