@@ -7,6 +7,11 @@ class Config(object):
     # ===== POSTGRES DB CONFIG =====
     SECRET_KEY = os.environ.get("SECRET_KEY")
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+    print(":::::::::::::::::::::::::::::::::::::::::::::::")
+    print(":::::::::::::::::::::::::::::::::::::::::::::::")
+    print(SQLALCHEMY_DATABASE_URI)
+    print(":::::::::::::::::::::::::::::::::::::::::::::::")
+    print(":::::::::::::::::::::::::::::::::::::::::::::::")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # ===== JWT CONFIG =====
