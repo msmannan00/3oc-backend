@@ -289,7 +289,7 @@ def google_login():
             ref_code = user_data.get("referral_code")
             print("ppppppppppp55", flush=True)
             print(ref_code, flush=True)
-            print(ref_code is undefined, flush=True)
+            print(type(ref_code), flush=True)
             if ref_code is "undefined":
                 ref_code = None
                 print("ppppppppppp7755", flush=True)
