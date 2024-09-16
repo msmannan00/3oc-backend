@@ -248,7 +248,6 @@ def generate_otp_for_new_phone_number(user_id):
 @app.route("/api/users/resend-otp", methods=["POST"])
 @jwt_required()
 def resend_otp():
-    print("Hello")
     # Get the phone number from the request
     data = request.get_json()
 
@@ -308,7 +307,6 @@ def google_login():
                 201,
             )
         else:
-            print("xxxxxxxxxxx1")
             # Create a new user
             new_user = User(**user_identity)
 

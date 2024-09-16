@@ -52,6 +52,5 @@ from app.routes import (
     friendship_routes,
     profile_routes,
     test_routes,
-    migration_route,
     irl_routes,
 )
