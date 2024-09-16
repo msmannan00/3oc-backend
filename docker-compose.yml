@@ -20,10 +20,8 @@ services:
       - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
       - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER}
     depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_started
+      - db
+      - redis
     volumes:
       - .:/app
     command: gunicorn -w 4 -b 0.0.0.0:8000 run:app  # Run Flask app with Gunicorn
@@ -39,11 +37,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   redis:
     image: redis:latest
@@ -59,33 +52,19 @@ services:
     image: nginx:latest
     container_name: nginx
     ports:
-      - "8090:80"
-      - "8453:443"
+      - "80:80"
+      - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/ssl:/etc/nginx/ssl
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro  # Nginx config file
+      - ./nginx/ssl:/etc/nginx/ssl  # SSL certificates directory
     depends_on:
       - app
-
-  metabase:
-    image: metabase/metabase:latest
-    container_name: metabase
-    ports:
-      - "3000:3000"
-    environment:
-      MB_DB_TYPE: postgres
-      MB_DB_DBNAME: ${POSTGRES_DB}
-      MB_DB_PORT: 5432
-      MB_DB_USER: ${POSTGRES_USER}
-      MB_DB_PASS: ${POSTGRES_PASSWORD}
-      MB_DB_HOST: db
-    depends_on:
-      - db
+    networks:
+      - default
 
 volumes:
   postgres_data:
   redis_data:
-  superset_data:
   nginx_data:
 
 networks:
