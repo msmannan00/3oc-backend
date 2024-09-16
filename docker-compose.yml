@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: flask_app
     environment:
-      - SECRET_KEY=${SECRET_KEY}a
+      - SECRET_KEY=${SECRET_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - DATABASE_URL=${DATABASE_URL}
       - REDIS_HOST=redis
@@ -33,7 +33,7 @@ services:
     container_name: postgres_db
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_USER: 'admin'
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
@@ -50,12 +50,11 @@ services:
     volumes:
       - redis_data:/data
 
-
   nginx:
     image: nginx:latest
     container_name: nginx
     ports:
-      - "8080:80"  # Map host port 8080 to container port 80
+      - "8080:80"
       - "443:443"
     volumes:
       - ./nginx/config/nginx.conf:/etc/nginx/nginx.conf:ro
@@ -72,7 +71,7 @@ services:
       MB_DB_TYPE: postgres
       MB_DB_DBNAME: ${POSTGRES_DB}
       MB_DB_PORT: 5432
-      MB_DB_USER: ${POSTGRES_USER}
+      MB_DB_USER: 'admin'
       MB_DB_PASS: ${POSTGRES_PASSWORD}
       MB_DB_HOST: db
     depends_on:
