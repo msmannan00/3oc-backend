@@ -286,9 +286,13 @@ def google_login():
             print("ppppppppppp5", flush=True)
             # Check if the user was referred
             ref_code = user_data.get("referral_code")
+            print("ppppppppppp55", flush=True)
             if ref_code:
+                print("ppppppppppp56", flush=True)
                 user_unique_key = user_data.get("email")
+                print("ppppppppppp57", flush=True)
                 referral.add_friend_data_to_temp_db(user_unique_key, ref_code)
+                print("ppppppppppp58", flush=True)
 
             print("ppppppppppp6", flush=True)
             # Get the friend that referred the user from redis
