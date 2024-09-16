@@ -1,5 +1,3 @@
-aiohttp
-aiohttp-retry
 aiosignal
 apispec
 APScheduler
