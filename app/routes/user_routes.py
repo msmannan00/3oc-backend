@@ -300,17 +300,16 @@ def google_login():
                 referral.add_friend_data_to_temp_db(user_unique_key, ref_code)
                 print("ppppppppppp58", flush=True)
 
-            print("ppppppppppp6", flush=True)
-            # Get the friend that referred the user from redis
-            referrer_id = redis_client.get(f"ref_code_friend:{user_data.get('email')}")
+                print("ppppppppppp6", flush=True)
+                # Get the friend that referred the user from redis
+                referrer_id = redis_client.get(f"ref_code_friend:{user_data.get('email')}")
 
-            print("ppppppppppp7", flush=True)
-            # Get the referral code of the referrer
-            ref_code = redis_client.get(f"user_id_ref_code:{referrer_id}")
-            if referrer_id and ref_code:
-                referral.handle_referral(
-                    existing_user.id, user_data.get("email"), referrer_id, ref_code
-                )
+                # Get the referral code of the referrer
+                ref_code = redis_client.get(f"user_id_ref_code:{referrer_id}")
+                if referrer_id and ref_code:
+                    referral.handle_referral(
+                        existing_user.id, user_data.get("email"), referrer_id, ref_code
+                    )
 
             # Create JWT token
             print("ppppppppppp8", flush=True)
