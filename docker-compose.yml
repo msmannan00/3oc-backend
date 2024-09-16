@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: flask_app
     environment:
-      - SECRET_KEY=${SECRET_KEY}
+      - SECRET_KEY=${SECRET_KEY}a
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - DATABASE_URL=${DATABASE_URL}
       - REDIS_HOST=redis
@@ -62,6 +62,21 @@ services:
       - ./nginx/ssl:/etc/nginx/ssl
     depends_on:
       - app
+
+  metabase:
+    image: metabase/metabase:latest
+    container_name: metabase
+    ports:
+      - "3000:3000"
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: ${POSTGRES_DB}
+      MB_DB_PORT: 5432
+      MB_DB_USER: ${POSTGRES_USER}
+      MB_DB_PASS: ${POSTGRES_PASSWORD}
+      MB_DB_HOST: db
+    depends_on:
+      - db
 
 volumes:
   postgres_data:
