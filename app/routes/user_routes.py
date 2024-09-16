@@ -1,3 +1,4 @@
+from apscheduler.util import undefined
 from flask import jsonify, request
 from app import app, db
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
@@ -286,6 +287,9 @@ def google_login():
             print("ppppppppppp5", flush=True)
             # Check if the user was referred
             ref_code = user_data.get("referral_code")
+            print("ppppppppppp55", flush=True)
+            print(ref_code, flush=True)
+            print(ref_code is undefined, flush=True)
             print("ppppppppppp55", flush=True)
             if ref_code:
                 print("ppppppppppp56", flush=True)
