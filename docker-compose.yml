@@ -24,7 +24,9 @@ services:
       - redis
     volumes:
       - .:/app
-    command: gunicorn -w 4 -b 0.0.0.0:8000 run:app  # Run Flask app with Gunicorn
+    command: gunicorn -w 4 -b 0.0.0.0:8000 run:app
+    ports:
+      - "8000:8000"
 
   db:
     image: postgres:latest
@@ -52,15 +54,13 @@ services:
     image: nginx:latest
     container_name: nginx
     ports:
-      - "80:80"
+      - "8080:80"  # Map host port 8080 to container port 80
       - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro  # Nginx config file
-      - ./nginx/ssl:/etc/nginx/ssl  # SSL certificates directory
+      - ./nginx/config/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl
     depends_on:
       - app
-    networks:
-      - default
 
 volumes:
   postgres_data:
