@@ -290,6 +290,10 @@ def google_login():
             print("ppppppppppp55", flush=True)
             print(ref_code, flush=True)
             print(ref_code is undefined, flush=True)
+            if ref_code is "undefined":
+                ref_code = None
+                print("ppppppppppp7755", flush=True)
+
             print("ppppppppppp55", flush=True)
             if ref_code:
                 print("ppppppppppp56", flush=True)
