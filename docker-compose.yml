@@ -32,9 +32,9 @@ services:
     image: postgres:latest
     container_name: postgres_db
     environment:
-      POSTGRES_DB: 'three_of_cup'
-      POSTGRES_USER: 'admin'
-      POSTGRES_PASSWORD: 'C8AhyGudJkth9znouWe4rVW5tLzoaVjPyBuwuH27P5CuJkuRbUYQPcWjLYTp5HLC'
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
