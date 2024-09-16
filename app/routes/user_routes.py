@@ -265,8 +265,10 @@ def resend_otp():
 def google_login():
     try:
         # Get user data from the request
+        print("ppppppppppp1", flush=True)
         user_data = request.get_json()
 
+        print("ppppppppppp2", flush=True)
         # Extract user info from the request and create an object
         user_identity = {
             "profile_name": user_data.get("profile_name"),
@@ -274,20 +276,25 @@ def google_login():
             "profile_picture": user_data.get("profile_picture"),
         }
 
+        print("ppppppppppp3", flush=True)
         # Check if the user already exists based on the email
         existing_user = User.query.filter(User.email == user_data.get("email")).first()
         if existing_user:
+            print("ppppppppppp4", flush=True)
             existing_user_json = user_schema.dump(existing_user)
 
+            print("ppppppppppp5", flush=True)
             # Check if the user was referred
             ref_code = user_data.get("referral_code")
             if ref_code:
                 user_unique_key = user_data.get("email")
                 referral.add_friend_data_to_temp_db(user_unique_key, ref_code)
 
+            print("ppppppppppp6", flush=True)
             # Get the friend that referred the user from redis
             referrer_id = redis_client.get(f"ref_code_friend:{user_data.get('email')}")
 
+            print("ppppppppppp7", flush=True)
             # Get the referral code of the referrer
             ref_code = redis_client.get(f"user_id_ref_code:{referrer_id}")
             if referrer_id and ref_code:
@@ -296,6 +303,7 @@ def google_login():
                 )
 
             # Create JWT token
+            print("ppppppppppp8", flush=True)
             access_token = create_access_token(identity=existing_user_json)
 
             return (
@@ -308,18 +316,18 @@ def google_login():
                 201,
             )
         else:
-            print("xxxxxxxxxxx1")
+            print("xxxxxxxxxxx1", flush=True)
             # Create a new user
             new_user = User(**user_identity)
-            print("xxxxxxxxxxx2")
+            print("xxxxxxxxxxx2", flush=True)
 
             # Save the new user to the database
             db.session.add(new_user)
             db.session.commit()
-            print("xxxxxxxxxxx3")
+            print("xxxxxxxxxxx3", flush=True)
 
             new_user_json = user_schema.dump(new_user)
-            print("xxxxxxxxxxx4")
+            print("xxxxxxxxxxx4", flush=True)
 
             # Check if the user was referred
             ref_code = user_data.get("referral_code")
@@ -327,11 +335,11 @@ def google_login():
                 user_unique_key = user_data.get("email")
                 referral.add_friend_data_to_temp_db(user_unique_key, ref_code)
 
-            print("xxxxxxxxxxx5")
+            print("xxxxxxxxxxx5", flush=True)
             # Get the friend that referred the user from redis
             referrer_id = redis_client.get(f"ref_code_friend:{user_data.get('email')}")
 
-            print("xxxxxxxxxxx6")
+            print("xxxxxxxxxxx6", flush=True)
             # Get the referral code of the referrer
             ref_code = redis_client.get(f"user_id_ref_code:{referrer_id}")
             if referrer_id and ref_code:
@@ -340,9 +348,9 @@ def google_login():
                 )
 
             # Create JWT token
-            print("xxxxxxxxxxx7")
+            print("xxxxxxxxxxx7", flush=True)
             access_token = create_access_token(identity=new_user_json)
-            print("xxxxxxxxxxx8")
+            print("xxxxxxxxxxx8", flush=True)
 
             return jsonify(
                 {"message": "Google Signin Successful.", "access_token": access_token}
