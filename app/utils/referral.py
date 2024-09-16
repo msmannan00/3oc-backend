@@ -32,18 +32,11 @@ def generate_referral_code(user_id, length=6):
 # Add a friend to the temporary database
 def add_friend_data_to_temp_db(user_unique_key, ref_code):
     # Check which user does the ref_code belong to
-    print("pppppppppppcccxzcxzccxzx1", flush=True)
-    referred_by_user_id = redis_client.set("","")
-    print("pppppppppppcccx1", flush=True)
     referred_by_user_id = redis_client.get(f"ref_code:{ref_code}")
-    print("pppppppppppcccx1", flush=True)
 
-    print("pppppppppppx2", flush=True)
     if referred_by_user_id:
         # Add the user to the list of friends of the referrer in the temporary DB
-        print("pppppppppppx3", flush=True)
         redis_client.set(f"ref_code_friend:{user_unique_key}", referred_by_user_id)
-        print("pppppppppppx4", flush=True)
 
 
 # Handle a referral
