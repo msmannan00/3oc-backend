@@ -1,13 +1,16 @@
-version: '3'
+version: '3.8'
 
 services:
   web:
-    build: .
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/app
+    build:
+      context: ./dockerFiles  # Path to your Dockerfile
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=OcBackend.settings  # Update this line
     depends_on:
       - db
 

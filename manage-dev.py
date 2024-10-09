@@ -12,7 +12,7 @@ def main():
     ELASTIC_CONNECTIONS.S_ELASTIC_USERNAME = ""
     ELASTIC_CONNECTIONS.S_ELASTIC_PASSWORD = ""
 
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', '3oc-backend.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'OcBackend.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

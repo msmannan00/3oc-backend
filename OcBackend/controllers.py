@@ -1,8 +1,8 @@
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
-from ..enums import SEARCH_MODEL_COMMANDS
-from ..serializers import UserSerializer, LoginSerializer
+from .enums import SEARCH_MODEL_COMMANDS
+from .serializers import UserSerializer, LoginSerializer
 
 class SearchController:
     _instance = None

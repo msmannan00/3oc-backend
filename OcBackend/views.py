@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from controllers.controllers import SearchController
+from .controllers import SearchController
 from .enums import SEARCH_MODEL_COMMANDS
 
 @api_view(['POST'])

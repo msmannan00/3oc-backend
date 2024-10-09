@@ -2,14 +2,14 @@ import os
 from pathlib import Path
 from django.conf import settings
 from django.contrib import staticfiles
-from app_manager.elastic_manager.elastic_controller import elastic_controller
-from app_manager.state_manager.states import APP_STATUS
+# from app_manager.elastic_manager.elastic_controller import elastic_controller
+# from app_manager.state_manager.states import APP_STATUS
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-ir+r3)d@v53u&qw-gfo&)&z%vda+scaq+0gw)9@u%zpjadip!3'
 
-DEBUG = APP_STATUS.S_DEVELOPER
+# DEBUG = APP_STATUS.S_DEVELOPER
 
 ALLOWED_HOSTS = ['*']
 
@@ -20,7 +20,7 @@ INSTALLED_APPS = [
   'django.contrib.sessions',
   'django.contrib.messages',
   'django.contrib.staticfiles',
-  '3oc-backend'
+  'OcBackend',
 ]
 
 MIDDLEWARE = [
@@ -30,13 +30,14 @@ MIDDLEWARE = [
   'django.middleware.csrf.CsrfViewMiddleware',
   'django.contrib.auth.middleware.AuthenticationMiddleware',
   'django.contrib.messages.middleware.MessageMiddleware',
-  '3oc-backend.middleware.maintenance_mode_middleware.maintenance_mode_middleware',
-  '3oc-backend.middleware.notification_routes_direct_access.notification_routes_direct_access',
-  '3oc-backend.middleware.cms_session_security.cms_session_security',
-  '3oc-backend.middleware.encrypted_access_filter.EncryptedAccessFilter',
+  'OcBackend.middleware.maintenance_mode_middleware.maintenance_mode_middleware',
+  'OcBackend.middleware.notification_routes_direct_access.notification_routes_direct_access',
+  'OcBackend.middleware.cms_session_security.cms_session_security',
+  'OcBackend.middleware.encrypted_access_filter.EncryptedAccessFilter',
 ]
-ROOT_URLCONF = '3oc-backend.urls'
-AUTH_USER_MODEL = '3oc-backend.CustomUser'
+ROOT_URLCONF = 'OcBackend.urls'
+# AUTH_USER_MODEL = 'OcBackend.CustomUser'
+
 
 SESSION_COOKIE_AGE = 600
 SESSION_SAVE_EVERY_REQUEST = True
@@ -51,7 +52,7 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 TEMPLATES = [
   {
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
-    'DIRS': [os.path.join(BASE_DIR, '3oc-backend/templates')]
+    'DIRS': [os.path.join(BASE_DIR, 'OcBackend/templates')]
     ,
     'APP_DIRS': True,
     'OPTIONS': {
@@ -66,7 +67,7 @@ TEMPLATES = [
   },
 ]
 
-WSGI_APPLICATION = '3oc-backend.wsgi.application'
+WSGI_APPLICATION = 'OcBackend.wsgi.application'
 
 # DATABASES = {
 #   'default': {
