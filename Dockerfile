@@ -1,11 +1,20 @@
-FROM python:3.12
+# Use the official Python image from the Docker Hub
+FROM python:3.11
 
-WORKDIR /user/src/app
+# Set the working directory in the container
+WORKDIR /app
 
-COPY . .
+# Copy the requirements file
+COPY requirements.txt .
 
+# Install the required packages
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy the entire project into the container
+COPY . .
+
+# Expose the port the app runs on
 EXPOSE 8000
 
-CMD ["python", "run.py"]
+# Start the Django server
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
