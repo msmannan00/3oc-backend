@@ -1,2 +1,6 @@
 venv/*
 .env
+app/__init__.py
+app/__pycache__/*
+users/__pycache__/*
+users/migrations/*

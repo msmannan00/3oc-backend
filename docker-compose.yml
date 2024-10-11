@@ -2,28 +2,28 @@ version: '3.8'
 
 services:
   web:
-    build:
-      context: ./dockerFiles  # Path to your Dockerfile
-      dockerfile: Dockerfile
+    build: .
     ports:
-      - "8000:8000"
+      - "8000:8000"  # Host:Container
     volumes:
       - .:/app
     environment:
-      - DJANGO_SETTINGS_MODULE=OcBackend.settings  # Update this line
+      - DEBUG=1
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env  # Load environment variables from the .env file
     depends_on:
-      - db
+      - redis  # Ensure Redis starts before the web service
+    command: >
+      sh -c "
+        python manage.py makemigrations &&
+        python manage.py migrate &&
+        python manage.py runserver 0.0.0.0:8000
+      "
 
-  db:
-    image: postgres:13
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
+  redis:
+    image: redis:latest
     ports:
-      - "5432:5432"
-
-volumes:
-  postgres_data:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
