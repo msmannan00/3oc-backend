@@ -7,9 +7,15 @@ from django.conf import settings
 from django_redis import get_redis_connection
 from .models import User, Referral, Friendship
 from passlib.hash import pbkdf2_sha256
-
+import redis
+from django.conf import settings
 # Initialize Redis connection
-redis_client = get_redis_connection("default")
+redis_client = redis.StrictRedis(
+    host=settings.REDIS_HOST,  # Use the Redis host from settings
+    port=settings.REDIS_PORT,  # Use the Redis port from settings
+    password=settings.REDIS_PASSWORD,
+    decode_responses=True  # Optional: Decodes responses using the default encoding (utf-8)
+)
 
 # Function to send SMS (placeholder)
 def send_sms(phone_number, otp):
