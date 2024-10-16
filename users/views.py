@@ -5,9 +5,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import TempUser, User
+from .models import TempUser, User, Tag
 from .serializers import TempUserSerializer, OTPVerificationSerializer, UserSerializer
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 
 def generate_otp():
     return str(random.randint(100000, 999999))
@@ -18,7 +18,7 @@ class RegisterPhoneNumberView(APIView):
         if serializer.is_valid():
             phone_number = serializer.validated_data['phone_number']
             otp = generate_otp()
-            TempUser.objects.update_or_create(phone_number=phone_number, defaults={'otp': otp})
+            TempUser.objects.update_or_create(phone_number=phone_number, defaults={'otp': otp, 'is_verified': False})
             # TODO: Integrate with SMS service to send OTP
             print(f"Generated OTP for {phone_number}: {otp}")  # For debugging purposes
             return Response({'message': 'OTP sent to your phone.'}, status=status.HTTP_200_OK)
@@ -50,6 +50,7 @@ class ResendOTPView(APIView):
                 return Response({'error': 'Phone number not found. Please register first.'}, status=status.HTTP_404_NOT_FOUND)
             otp = generate_otp()
             temp_user.otp = otp
+            temp_user.is_verified = False
             temp_user.save()
             # TODO: Integrate with SMS service to resend OTP
             print(f"Resent OTP for {phone_number}: {otp}")  # For debugging purposes
@@ -65,9 +66,9 @@ class SaveUserDataView(APIView):
             if not temp_user:
                 return Response({'error': 'Phone number not verified.'}, status=status.HTTP_400_BAD_REQUEST)
             try:
-                user = serializer.save()
-                # Remove from TempUser
-                temp_user.delete()
+                with transaction.atomic():
+                    user = serializer.save()
+                    temp_user.delete()
                 return Response({'message': 'User registered successfully.'}, status=status.HTTP_201_CREATED)
             except IntegrityError as e:
                 if 'unique constraint' in str(e).lower():

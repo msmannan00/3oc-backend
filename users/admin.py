@@ -1,25 +1,32 @@
-# from django.contrib import admin
-# from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-# from .models import User, Referral, Friendship, OTP
-#
-# class UserAdmin(BaseUserAdmin):
-#     list_display = ('phone_number', 'email', 'profile_name', 'is_verified', 'is_staff')
-#     search_fields = ('phone_number', 'email', 'profile_name')
-#     ordering = ('phone_number',)
-#     fieldsets = (
-#         (None, {'fields': ('phone_number', 'password')}),
-#         ('Personal Info', {'fields': ('profile_name', 'email', 'profile_picture')}),
-#         ('Permissions', {'fields': ('is_verified', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-#         ('Important dates', {'fields': ('last_login', 'date_joined')}),
-#     )
-#     add_fieldsets = (
-#         (None, {
-#             'classes': ('wide',),
-#             'fields': ('phone_number', 'profile_name', 'email', 'password1', 'password2'),
-#         }),
-#     )
-#
-# admin.site.register(User, UserAdmin)
-# admin.site.register(Referral)
-# admin.site.register(Friendship)
-# admin.site.register(OTP)
+# users/admin.py
+
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import User, TempUser, Tag
+
+class CustomUserAdmin(BaseUserAdmin):
+    model = User
+    list_display = ('email', 'phone_number', 'is_verified', 'is_active', 'is_staff')
+    fieldsets = (
+        (None, {'fields': ('email', 'phone_number', 'password')}),
+        ('Personal Info', {'fields': ('name', 'display_picture')}),
+        ('Permissions', {'fields': ('is_staff', 'is_active', 'is_verified', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Tags', {'fields': ('tags',)}),
+    )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'phone_number', 'password1', 'password2', 'is_staff', 'is_active')}
+        ),
+    )
+    search_fields = ('email', 'phone_number')
+    ordering = ('email',)
+    filter_horizontal = ('groups', 'user_permissions', 'tags',)
+
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+
+admin.site.register(User, CustomUserAdmin)
+admin.site.register(TempUser)
+admin.site.register(Tag, TagAdmin)

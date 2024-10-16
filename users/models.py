@@ -12,6 +12,12 @@ class TempUser(models.Model):
     def __str__(self):
         return self.phone_number
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, phone_number, password=None, **extra_fields):
         if not email:
@@ -37,6 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    tags = models.ManyToManyField(Tag, related_name='users', blank=True)  # Many-to-Many relationship
 
     objects = CustomUserManager()
 
