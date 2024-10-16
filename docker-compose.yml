@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"  # Expose the Django app on port 8000 internally
+    volumes:
+      - .:/app
+    environment:
+      - DEBUG=1
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env  # Load environment variables from the .env file
+    depends_on:
+      - redis  # Ensure Redis starts before the web service
+      - db     # Ensure database starts before web service
+    command: >
+      sh -c "
+        python manage.py makemigrations &&
+        python manage.py migrate &&
+        python manage.py runserver 0.0.0.0:8000
+      "
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx  # Use custom Dockerfile for Nginx
+    ports:
+      - "80:80"  # Expose Nginx on port 80 to host
+    depends_on:
+      - web  # Ensure the web service is up before starting Nginx
+    volumes:
+      - .:/app
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf  # Mount the custom Nginx config
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+volumes:
+  postgres_data:
