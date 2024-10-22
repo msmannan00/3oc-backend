@@ -3,19 +3,18 @@ venv/
 .venv/*
 */__pycache__/*
 */migrations/__pycache__/*
-*/migrations/*
+test.py
 .env
 <<<<<<< Updated upstream
 .idea/*
 .idea/
 data/redis/dump.rdb
 =======
-app/__init__.py
 app/__pycache__/*
 users/__pycache__/*
-users/migrations/*
 data/*
 db.sqlite3
 profile_picture/*
 .idea/*
 >>>>>>> Stashed changes
+staticfiles/*
