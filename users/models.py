@@ -1,5 +1,3 @@
-# users/models.py
-
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 
@@ -17,6 +15,13 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
+
+class Location(models.Model):
+    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='locations')
+    location = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.location
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, phone_number, password=None, **extra_fields):
@@ -36,6 +41,7 @@ class CustomUserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     id = models.AutoField(primary_key=True)
     phone_number = models.CharField(max_length=15, unique=True)
+    otpCode = models.CharField(max_length=6, blank=True, null=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
@@ -43,7 +49,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    tags = models.ManyToManyField(Tag, related_name='users', blank=True)  # Many-to-Many relationship
+    tags = models.ManyToManyField(Tag, related_name='users', blank=True)
 
     objects = CustomUserManager()
 

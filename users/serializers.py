@@ -1,7 +1,7 @@
 # users/serializers.py
 
 from rest_framework import serializers
-from .models import TempUser, User, Tag
+from .models import TempUser, User, Tag, Location
 
 
 class TempUserSerializer(serializers.ModelSerializer):
@@ -13,6 +13,7 @@ class TempUserSerializer(serializers.ModelSerializer):
 class OTPVerificationSerializer(serializers.Serializer):
     phone_number = serializers.CharField(max_length=15)
     otp = serializers.CharField(max_length=6)
+    type = serializers.BooleanField(required=True)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -21,14 +22,21 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ['name']
 
 
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = ['id', 'location']
+
+
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     tags = serializers.CharField(write_only=True, required=False, help_text="Comma-separated tags")
+    locations = LocationSerializer(many=True, read_only=True)
 
     class Meta:
         model = User
         fields = ['id', 'phone_number', 'name', 'email', 'password', 'display_picture', 'tags', 'is_verified',
-                  'is_active']
+                  'is_active', 'locations']
         read_only_fields = ['is_verified', 'is_active']
 
     def create(self, validated_data):
