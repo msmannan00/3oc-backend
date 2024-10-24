@@ -16,10 +16,7 @@ class OTPVerificationSerializer(serializers.Serializer):
     type = serializers.BooleanField(required=True)
 
 
-class TagSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tag
-        fields = ['name']
+
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -28,29 +25,48 @@ class LocationSerializer(serializers.ModelSerializer):
         fields = ['id', 'location']
 
 
+class TagSerializer(serializers.ModelSerializer):  # Use ModelSerializer for ease of use
+    class Meta:
+        model = Tag  # Specify the model
+        fields = ['name']  # List the fields you want to serialize
+
+    name = serializers.CharField(max_length=100)  # You don't need to define this again
+
+    def create(self, validated_data):
+        # Create and return a new Tag instance
+        return Tag.objects.create(tag=validated_data['name'])
+
+
+# Updated UserSerializer
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
-    tags = serializers.CharField(write_only=True, required=False, help_text="Comma-separated tags")
+    tags = TagSerializer(many=True, read_only=True)  # Ensure tags is a list of TagSerializer
     locations = LocationSerializer(many=True, read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'phone_number', 'name', 'email', 'password', 'display_picture', 'tags', 'is_verified',
-                  'is_active', 'locations']
+        fields = [
+            'id', 'phone_number', 'name', 'email', 'password', 'display_picture',
+            'is_verified', 'is_active', 'tags', 'locations', 'profession',
+            'about', 'facebook_url', 'instagram_url', 'linkedin_url', 'twitter_url'
+        ]
         read_only_fields = ['is_verified', 'is_active']
 
     def create(self, validated_data):
-        tags_str = validated_data.pop('tags', '')
+        # Expect tags to be a list of dictionaries
+        tags_data = validated_data.pop('tags', [])
         user = User.objects.create_user(password=validated_data.pop('password'), **validated_data)
-        if tags_str:
-            tag_names = [tag.strip() for tag in tags_str.split(',') if tag.strip()]
-            for tag_name in tag_names:
-                tag, created = Tag.objects.get_or_create(name=tag_name)
-                user.tags.add(tag)
+
+        for tag_data in tags_data:
+            tag_name = tag_data['tag']
+            tag, created = Tag.objects.get_or_create(name=tag_name)
+            user.tags.add(tag)
+
         return user
 
     def update(self, instance, validated_data):
-        tags_str = validated_data.pop('tags', '')
+        # Expect tags to be a list of dictionaries
+        tags_data = validated_data.pop('tags', [])
         password = validated_data.pop('password', None)
 
         for attr, value in validated_data.items():
@@ -61,11 +77,23 @@ class UserSerializer(serializers.ModelSerializer):
 
         instance.save()
 
-        if tags_str:
-            instance.tags.clear()
-            tag_names = [tag.strip() for tag in tags_str.split(',') if tag.strip()]
-            for tag_name in tag_names:
-                tag, created = Tag.objects.get_or_create(name=tag_name)
-                instance.tags.add(tag)
+        # Clear and re-add tags
+        instance.tags.clear()
+        for tag_data in tags_data:
+            tag_name = tag_data['tag']
+            tag, created = Tag.objects.get_or_create(name=tag_name)
+            instance.tags.add(tag)
 
         return instance
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['about', 'profession']
+
+
+class SocialMediaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['facebook_url', 'instagram_url', 'linkedin_url', 'twitter_url']

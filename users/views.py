@@ -5,8 +5,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import TempUser, User, Location
-from .serializers import TempUserSerializer, OTPVerificationSerializer, UserSerializer, LocationSerializer
+from .models import *
+from .serializers import *
 from django.db import IntegrityError, transaction
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
@@ -24,8 +24,10 @@ TWILIO_PHONE_NUMBER = config('TWILIO_PHONE_NUMBER')
 # Initialize Twilio Client
 twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
+
 def generate_otp():
     return str(random.randint(100000, 999999))
+
 
 class RegisterPhoneNumberView(APIView):
     def post(self, request):
@@ -51,7 +53,8 @@ class RegisterPhoneNumberView(APIView):
                 # Save the OTP in the User model
                 user.otpCode = otp
                 user.save(update_fields=['otpCode'])
-                return Response({'message': 'OTP sent to your phone for sign-in.', 'user_type': False}, status=status.HTTP_200_OK)
+                return Response({'message': 'OTP sent to your phone for sign-in.', 'user_type': False},
+                                status=status.HTTP_200_OK)
             except Exception:
                 return Response({'error': 'Failed to send OTP. Please try again later.'},
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -89,10 +92,12 @@ class RegisterPhoneNumberView(APIView):
                 from_=TWILIO_PHONE_NUMBER,
                 to=phone_number
             )
-            return Response({'message': 'OTP sent to your phone for sign-up.', 'user_type': True}, status=status.HTTP_200_OK)
+            return Response({'message': 'OTP sent to your phone for sign-up.', 'user_type': True},
+                            status=status.HTTP_200_OK)
         except Exception:
             return Response({'error': 'Failed to send OTP. Please try again later.'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class VerifyOTPView(APIView):
     def post(self, request):
@@ -139,6 +144,7 @@ class VerifyOTPView(APIView):
                                 status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ResendOTPView(APIView):
     def post(self, request):
@@ -195,6 +201,7 @@ class SaveUserDataView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
@@ -211,9 +218,75 @@ def user_locations_view(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
 def user_detail_view(request):
     serializer = UserSerializer(request.user)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AddTagAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        # Get all tags associated with the authenticated user
+        tags = user.tags.all()
+        # Serialize the tag names
+        tag_names = [tag.name for tag in tags]
+        return Response({"tags": tag_names}, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        tag_names = request.data.get('tag')
+
+        if not tag_names:
+            return Response({"error": "Tag name(s) are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Split the tag string by commas and remove any extra spaces
+        tag_list = [tag.strip() for tag in tag_names.split(',') if tag.strip()]
+
+        # Add each tag to the user
+        added_tags = []
+        for tag_name in tag_list:
+            tag, created = Tag.objects.get_or_create(name=tag_name)
+            user.tags.add(tag)
+            added_tags.append(tag_name)
+
+        user.save()
+
+        return Response({"message": "Tags added successfully", "tags": added_tags}, status=status.HTTP_201_CREATED)
+
+
+class UserProfileAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        serializer = UserProfileSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        serializer = UserProfileSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SocialMediaLinksView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        serializer = SocialMediaSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        user = request.user
+        serializer = SocialMediaSerializer(user, data=request.data, partial=True)  # Allow partial updates
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

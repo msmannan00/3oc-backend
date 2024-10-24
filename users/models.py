@@ -38,6 +38,8 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, phone_number, password, **extra_fields)
 
+
+# models.py
 class User(AbstractBaseUser, PermissionsMixin):
     id = models.AutoField(primary_key=True)
     phone_number = models.CharField(max_length=15, unique=True)
@@ -51,6 +53,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     tags = models.ManyToManyField(Tag, related_name='users', blank=True)
 
+    # New fields
+    profession = models.CharField(max_length=255, null=True, blank=True)
+    about = models.TextField(null=True, blank=True)
+    facebook_url = models.URLField(max_length=255, null=True, blank=True)
+    instagram_url = models.URLField(max_length=255, null=True, blank=True)
+    linkedin_url = models.URLField(max_length=255, null=True, blank=True)
+    twitter_url = models.URLField(max_length=255, null=True, blank=True)
+
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
@@ -58,3 +68,4 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
